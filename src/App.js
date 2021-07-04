@@ -63,16 +63,16 @@ export default class App extends React.Component {
   render() {
     const balanceByAccount = Object.keys(this.state.balanceByAccount).map(
       account => {
-        let balance = this.state.balanceByAccount[account];
+        const balance = this.state.balanceByAccount[account];
         return (
-          <div>
+          <div key={account}>
             <span>
               <b>Account:</b> {account}{' '}
             </span>
             <span>
               <b>Balance:</b> {balance}
             </span>
-            <button onclick={this.copyToClipboard(balance)}>
+            <button onClick={() => this.copyToClipboard(balance)}>
               📋 Copy to clipboard
             </button>
           </div>
