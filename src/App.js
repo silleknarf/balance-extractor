@@ -1,4 +1,6 @@
 import React from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './style.css';
 
 export default class App extends React.Component {
@@ -54,7 +56,9 @@ export default class App extends React.Component {
   async copyToClipboard(text) {
     try {
       await navigator.clipboard.writeText(text);
-      console.log('Copied to clipboard');
+      const copiedToClipboardText = "Copied to clipboard";
+      console.log(copiedToClipboardText);
+      toast(copiedToClipboardText, { autoClose: 2000 })
     } catch (err) {
       console.error('Failed to copy: ', err);
     }
@@ -94,6 +98,7 @@ export default class App extends React.Component {
           onChange={this.handleChange}
         />
         {balanceByAccount}
+        <ToastContainer />
       </div>
     );
   }
