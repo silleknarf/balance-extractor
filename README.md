@@ -1,3 +1,3 @@
-# react-6syfsa
+# Balance Extractor
 
-[Edit on StackBlitz ⚡️](https://stackblitz.com/edit/react-6syfsa)
+A small personal utility app for extracting account balances from WhatsApp messages.
