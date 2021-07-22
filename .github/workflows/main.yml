@@ -37,9 +37,8 @@ jobs:
       - name: Deploy
         env:
               SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config --global user.email "action@github.com"
           git config --global user.name "Github Action"
-          git remote set-url --push origin https://silleknarf:$GITHUB_TOKEN@github.com/silleknarf/balance-extractor
+          git remote add origin https://github.com/silleknarf/balance-extractor.git
           npm run deploy
