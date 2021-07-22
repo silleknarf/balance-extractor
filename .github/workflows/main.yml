@@ -25,7 +25,18 @@ jobs:
         run: npm i
       - name: Build
         run: npm run build
+      - name: Add SSH key
+        env:
+            SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: |
+            mkdir -p /home/runner/.ssh
+            echo "${{ secrets.BALANCE_EXTRACTOR_SSH_KEY }}" > /home/runner/.ssh/github_actions
+            chmod 600 /home/runner/.ssh/github_actions
+            ssh-agent -a $SSH_AUTH_SOCK > /dev/null   
+            ssh-add /home/runner/.ssh/github_actions
       - name: Deploy
+        env:
+              SSH_AUTH_SOCK: /tmp/ssh_agent.sock
         run: |
           git config --global user.email "action@github.com"
           git config --global user.name "Github Action"
