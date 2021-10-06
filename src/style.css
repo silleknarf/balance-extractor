@@ -1,14 +1,17 @@
 h1, p {
   font-family: Lato;
+  font-size: xx-large;
 }
 textarea {
   width: 100%;
   min-height: 80%;
   margin: 10px;
+  font-size: medium;
 }
 
 div {
   margin: 10px;
+  font-size: x-large;
 }
 
 button {
