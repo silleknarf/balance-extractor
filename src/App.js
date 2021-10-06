@@ -23,30 +23,40 @@ export default class App extends React.Component {
 
   getBalanceByAccount(text) {
     const lines = text.split('\n');
-    const balancesByAccount = {};
-    lines.forEach(line => {
-      const account = this.getAccount(line);
-      const balanceInPence = this.getBalanceInPence(line);
+    const accountBalances = lines
+      .map(line => ({
+          account: this.getAccount(line),
+          balanceInPence: this.getBalanceInPence(line)
+      }));
 
-      if (balanceInPence !== 0) {
-        if (!balancesByAccount[account]) {
-          balancesByAccount[account] = balanceInPence;
+    this.enrichAccountUsingNextAccount(accountBalances);
+
+    const balanceInPenceByAccount = this.getBalanceInPenceByAccount(accountBalances);
+
+    const balanceByAccount = {};
+    Object.keys(balanceInPenceByAccount).forEach(account => {
+      balanceByAccount[account] = balanceInPenceByAccount[account] / 100;
+    });
+
+    return balanceByAccount;
+  }
+
+  getBalanceInPenceByAccount(accountBalances) {
+    const balanceInPenceByAccount = {};
+    accountBalances.forEach(accountBalance => {
+      if (accountBalance.balanceInPence !== 0) {
+        if (!balanceInPenceByAccount[accountBalance.account]) {
+          balanceInPenceByAccount[accountBalance.account] = accountBalance.balanceInPence;
         } else {
-          balancesByAccount[account] += balanceInPence;
+          balanceInPenceByAccount[accountBalance.account] += accountBalance.balanceInPence;
         }
       }
     });
-
-    // Convert back to pounds
-    Object.keys(balancesByAccount).forEach(account => {
-      balancesByAccount[account] /= 100;
-    })
-
-    return balancesByAccount;
+    return balanceInPenceByAccount;
   }
 
   getAccount(line) {
-    let account = 'unknown';
+    let account = null;
     const accounts = ['amex', 'revolut'];
     accounts.forEach(acc => {
       if (line.toLowerCase().includes(acc)) {
@@ -56,6 +66,11 @@ export default class App extends React.Component {
     return account;
   }
 
+  /**
+   * Parse a line containing a sterling monetary amount and return the number of pence 
+   * as an int. 
+   * E.g. "£102.2 to revolut" => 10220
+   */
   getBalanceInPence(line) {
     const balanceRegex = /£(\d+)\.?(\d+)?/;
     const balanceMatch = line.match(balanceRegex);
@@ -77,6 +92,23 @@ export default class App extends React.Component {
     }
 
     return balanceAmount;
+  }
+
+  /**
+   * If we don't have an account we populate it using the next
+   * available one or "unknown"
+   */
+  enrichAccountUsingNextAccount(accountBalances) {
+    for (let i = 0; i < accountBalances.length; i++) {
+      const accountBalance = accountBalances[i];
+      if (!accountBalance.account) {
+        const remainingAccounts = accountBalances.slice(i + 1)
+        const nextAccount = remainingAccounts
+          .filter(accountBalance => accountBalance.account)
+          .map(accountBalance => accountBalance.account)[0];
+        accountBalance.account = nextAccount || "unknown";
+      }
+    }
   }
 
   async copyToClipboard(text) {
