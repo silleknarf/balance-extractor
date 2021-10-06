@@ -23,22 +23,25 @@ export default class App extends React.Component {
 
   getBalanceByAccount(text) {
     const lines = text.split('\n');
-    const balanceRegex = /\d+\.\d+/;
     const balancesByAccount = {};
     lines.forEach(line => {
-      const balances = line.match(balanceRegex);
       const account = this.getAccount(line);
-      if (balances) {
-        balances.forEach(balance => {
-          const balanceAmount = parseFloat(balance);
-          if (!balancesByAccount[account]) {
-            balancesByAccount[account] = balanceAmount;
-          } else {
-            balancesByAccount[account] += balanceAmount;
-          }
-        });
+      const balanceInPence = this.getBalanceInPence(line);
+
+      if (balanceInPence !== 0) {
+        if (!balancesByAccount[account]) {
+          balancesByAccount[account] = balanceInPence;
+        } else {
+          balancesByAccount[account] += balanceInPence;
+        }
       }
     });
+
+    // Convert back to pounds
+    Object.keys(balancesByAccount).forEach(account => {
+      balancesByAccount[account] /= 100;
+    })
+
     return balancesByAccount;
   }
 
@@ -51,6 +54,29 @@ export default class App extends React.Component {
       }
     });
     return account;
+  }
+
+  getBalanceInPence(line) {
+    const balanceRegex = /£(\d+)\.?(\d+)?/;
+    const balanceMatch = line.match(balanceRegex);
+    let balanceAmount = 0;
+
+    if (!balanceMatch) return balanceAmount;
+
+    // Handle pounds
+    if (balanceMatch[1]) {
+      balanceAmount += parseInt(balanceMatch[1] * 100);
+    }
+    // Handle pence
+    if (balanceMatch[2]) {
+      if (balanceMatch[2].length === 1) {
+        balanceAmount += parseInt(balanceMatch[2] * 10);
+      } else if (balanceMatch[2].length === 2) {
+        balanceAmount += parseInt(balanceMatch[2]);
+      }
+    }
+
+    return balanceAmount;
   }
 
   async copyToClipboard(text) {
