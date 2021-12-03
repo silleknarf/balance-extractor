@@ -57,7 +57,7 @@ export default class App extends React.Component {
 
   getAccount(line) {
     let account = null;
-    const accounts = ['amex', 'revolut'];
+    const accounts = ['amex', 'revolut', 'ca1'];
     accounts.forEach(acc => {
       if (line.toLowerCase().includes(acc)) {
         account = acc;
