@@ -3,6 +3,9 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './style.css';
 
+
+const accounts = ['amex', 'revolut', 'ca1', 'treat fund'];
+
 export default class App extends React.Component {
   constructor(props) {
     super(props);
@@ -57,7 +60,6 @@ export default class App extends React.Component {
 
   getAccount(line) {
     let account = null;
-    const accounts = ['amex', 'revolut', 'ca1'];
     accounts.forEach(acc => {
       if (line.toLowerCase().includes(acc)) {
         account = acc;
