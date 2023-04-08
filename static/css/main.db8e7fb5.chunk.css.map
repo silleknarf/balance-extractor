@@ -1,0 +1,1 @@
+{"version":3,"sources":["webpack://src/style.css"],"names":[],"mappings":"AAAA,KACE,gBACF,CACA,SACE,UAAW,CACX,cAEF,CAMA,oBACE,WACF","file":"main.db8e7fb5.chunk.css","sourcesContent":["h1, p {\n  font-family: Lato;\n}\ntextarea {\n  width: 100%;\n  min-height: 80%;\n  margin: 10px;\n}\n\ndiv {\n  margin: 10px;\n}\n\nbutton {\n  margin: 10px;\n}"]}
