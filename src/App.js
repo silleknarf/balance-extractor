@@ -4,7 +4,12 @@ import 'react-toastify/dist/ReactToastify.css';
 import './style.css';
 
 
-const accounts = ['amex', 'revolut', 'ca1', 'treat fund'];
+const accounts = [
+  { accountName: 'amex' },
+  { accountName: 'revolut' },
+  { accountName: 'ca1' },
+  { accountName: 'treat fund', aliases: ['le treat'] }
+];
 
 export default class App extends React.Component {
   constructor(props) {
@@ -28,7 +33,7 @@ export default class App extends React.Component {
     const lines = text.split('\n');
     const accountBalances = lines
       .map(line => ({
-          account: this.getAccount(line),
+          accountName: this.getAccountName(line),
           balanceInPence: this.getBalanceInPence(line)
       }));
 
@@ -37,8 +42,8 @@ export default class App extends React.Component {
     const balanceInPenceByAccount = this.getBalanceInPenceByAccount(accountBalances);
 
     const balanceByAccount = {};
-    Object.keys(balanceInPenceByAccount).forEach(account => {
-      balanceByAccount[account] = balanceInPenceByAccount[account] / 100;
+    Object.keys(balanceInPenceByAccount).forEach(accountName => {
+      balanceByAccount[accountName] = balanceInPenceByAccount[accountName] / 100;
     });
 
     return balanceByAccount;
@@ -48,23 +53,22 @@ export default class App extends React.Component {
     const balanceInPenceByAccount = {};
     accountBalances.forEach(accountBalance => {
       if (accountBalance.balanceInPence !== 0) {
-        if (!balanceInPenceByAccount[accountBalance.account]) {
-          balanceInPenceByAccount[accountBalance.account] = accountBalance.balanceInPence;
+        if (!balanceInPenceByAccount[accountBalance.accountName]) {
+          balanceInPenceByAccount[accountBalance.accountName] = accountBalance.balanceInPence;
         } else {
-          balanceInPenceByAccount[accountBalance.account] += accountBalance.balanceInPence;
+          balanceInPenceByAccount[accountBalance.accountName] += accountBalance.balanceInPence;
         }
       }
     });
     return balanceInPenceByAccount;
   }
 
-  getAccount(line) {
+  getAccountName(line) {
     let account = null;
-    accounts.forEach(acc => {
-      if (line.toLowerCase().includes(acc)) {
-        account = acc;
-      }
-    });
+    accounts
+      .flatMap(acc => [acc.accountName] + (acc.aliases || []))
+      .filter(alias => line.toLowerCase().includes(alias))
+      .forEach(acc => account = acc.accountName);
     return account;
   }
 
@@ -103,11 +107,11 @@ export default class App extends React.Component {
   enrichAccountUsingNextAccount(accountBalances) {
     for (let i = 0; i < accountBalances.length; i++) {
       const accountBalance = accountBalances[i];
-      if (!accountBalance.account) {
+      if (!accountBalance.accountName) {
         const remainingAccounts = accountBalances.slice(i + 1)
         const nextAccount = remainingAccounts
-          .filter(accountBalance => accountBalance.account)
-          .map(accountBalance => accountBalance.account)[0];
+          .filter(accountBalance => accountBalance.accountName)
+          .map(accountBalance => accountBalance.accountName)[0];
         accountBalance.account = nextAccount || "unknown";
       }
     }
